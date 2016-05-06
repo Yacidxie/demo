@@ -5,43 +5,28 @@
     <meta charset="UTF-8">
     <title>Document</title>
     <style>
-    * {
+    body {
         margin: 0;
-        padding: 0;
     }
     
-    .cq_banner {
+    .banner {
         width: 100%;
         height: 600px;
-        margin: 0 auto;
         position: relative;
         overflow: hidden;
     }
     
-    .prev {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        padding-right: 5px
-    }
-    
-    .next {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        padding-left: 5px
-    }
-    
     .prev,
     .next {
+        display: none;
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        margin-top: -50px;
         color: #fff;
         font-size: 80px;
-        z-index: 2;
-        cursor: pointer;
-        margin-top: -50px;
         font-weight: bold;
-        display: none;
-        background: rgba(240, 75, 200, 0.2);
+        text-decoration: none;
         -webkit-transition: all 0.35s ease-in-out;
         -moz-transition: all 0.35s ease-in-out;
         -ms-transition: all 0.35s ease-in-out;
@@ -49,32 +34,29 @@
         transition: all 0.35s ease-in-out;
     }
     
-    .prev:hover,
-    .next:hover {
-        background: rgba(240, 75, 200, 0.6)
+    .prev {
+        left: 0;
+        padding-right: 5px
     }
     
-    .imgBox {
-        width: 100%;
-        overflow: hidden;
-        height: 700px;
-        position: relative;
+    .next {
+        right: 0;
+        padding-left: 5px
+    }
+    
+    .prev:hover,
+    .next:hover {
+        background: #ccc;
+        background: rgba(204, 204, 204, 0.4);
     }
     
     .imgBox li {
-        width: 100%;
-        height: 700px;
-        overflow: hidden;
         position: absolute;
+        width: 100%;
+        height: 600px;
         left: 0;
         top: 0;
         text-align: center
-    }
-    
-    .imgBox li img {
-        position: absolute;
-        top: 0;
-        left: 0
     }
     
     .bannerlist {
@@ -91,17 +73,17 @@
         border-radius: 50%;
         background: #fff;
         margin-right: 5px;
-        cursor: pointer
+        cursor: pointer;
     }
     
-    .bannerlist span.checked {
+    .bannerlist .checked {
         background: #f60;
     }
     </style>
 </head>
 
 <body>
-    <div class="cq_banner">
+    <div class="banner">
         <a href="" class="prev">&lt;</a>
         <a href="" class="next">&gt;</a>
         <ul class="imgBox">
@@ -114,56 +96,69 @@
     <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.js"></script>
     <script>
     $(function() {
-        $(".cq_banner").hover(function() {
-            $(".prev,.next").stop().fadeIn(300);
-        }, function() {
-            $(".prev,.next").stop().fadeOut(300);
-        }, 100);
-        $(".imgBox li:eq(0)").show().siblings().hide();
-        var page = 1,
-            num = 1,
-            a = Math.ceil(($(".imgBox li").length) / num);
-        $('.next').click(function() {
-            if (page == a) {
-                $('.imgBox li').eq(0).fadeIn(400).siblings().fadeOut(400);
-                $(".bannerlist span").eq(0).addClass("checked").siblings().removeClass();
-                page = 1;
-            } else {
-                $('.imgBox li').eq(page).fadeIn(400).siblings().fadeOut(400);
-                $(".bannerlist span").eq(page).addClass("checked").siblings().removeClass();
-                page++;
-            }
-        });
-        $('.prev').click(function() {
-            if (page == 1) {
-                $('.imgBox li').eq(a - 1).fadeIn(400).siblings().fadeOut(400);
-                $(".bannerlist span").eq(a - 1).addClass("checked").siblings().removeClass();
-                page = a;
-            } else {
-                $('.imgBox li').eq((page - a) + 1).fadeIn(400).siblings().fadeOut(400);
-                $(".bannerlist span").eq((page - a) + 1).addClass("checked").siblings().removeClass();
-                page--;
-            }
-        });
-        auto = setInterval(function() {
+        var current = 1, //当前页指针（从1开始）
+            slideNum = $(".imgBox li").length; //图片个数
+
+        // 每隔4秒自动轮换
+        var auto = setInterval(function() {
             $(".next").trigger("click");
         }, 4000);
-        $(".imgBox li,.prev,.next,.bannerlist").mouseover(function() {
+
+        // 加上小圆点导航
+        for (i = 0; i < $(".imgBox li").length; i++) {
+            $(".bannerlist").append("<span></span>")
+        }
+        $(".bannerlist span:eq(0)").addClass("checked"); // 第一个小圆点导航加上选中状态
+        $(".imgBox li:eq(0)").show().siblings().hide(); // 第一张图片出现，其他图片隐藏
+
+        //鼠标移入移出轮播图区域，上一页下一页按钮显现/消失，启动/停止轮播
+        $(".banner").hover(function() {
+            $(".prev,.next").stop(true, true).fadeIn(300);
             clearInterval(auto);
-        }).mouseout(function() {
+        }, function() {
+            $(".prev,.next").stop(true, true).fadeOut(300);
             auto = setInterval(function() {
                 $(".next").trigger("click");
-            }, 4000)
+            }, 4000);
         });
-        for (i = 0; i < $(".imgBox li").length; i++) {
-            $(".bannerlist").append("")
-        }
-        $(".bannerlist span:eq(0)").addClass("checked");
+
+        // 下一页按钮点击事件
+        $('.next').click(function(e) {
+            e.preventDefault();
+            //判断是否是最后一页
+            if (current === slideNum) {
+                $('.imgBox li').eq(0).fadeIn(400).siblings().fadeOut(400);
+                $(".bannerlist span").eq(0).addClass("checked").siblings().removeClass();
+                current = 1;
+            } else {
+                $('.imgBox li').eq(current).fadeIn(400).siblings().fadeOut(400);
+                $(".bannerlist span").eq(current).addClass("checked").siblings().removeClass();
+                current++;
+            }
+        });
+
+        // 上一页按钮点击事件
+        $('.prev').click(function(e) {
+            e.preventDefault();
+            // 判断是否是第一页
+            if (current === 1) {
+                $('.imgBox li').eq(slideNum - 1).fadeIn(400).siblings().fadeOut(400);
+                $(".bannerlist span").eq(slideNum - 1).addClass("checked").siblings().removeClass();
+                current = slideNum;
+            } else {
+                $('.imgBox li').eq(current - 2).fadeIn(400).siblings().fadeOut(400);
+                $(".bannerlist span").eq(current - 2).addClass("checked").siblings().removeClass();
+                current--;
+            }
+        });
+
+        // 小圆点导航按钮点击切换图片
         $(".bannerlist span").click(function() {
+            current = $(this).index() + 1;
             $(this).addClass("checked").siblings().removeClass();
-            $('.imgBox li').eq($(this).index()).fadeIn(300).siblings().fadeOut(600);
-        })
-    })
+            $('.imgBox li').eq(current - 1).fadeIn(300).siblings().fadeOut(600);
+        });
+    });
     </script>
 </body>
 
