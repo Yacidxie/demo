@@ -50,23 +50,23 @@
             prevCid = null; // 前一个被选中的红包单选
 
         // 输入金额事件
-        $('.all').on('i', function(event, data) {
+        $(document).on('i', function(event, data) {
             i = data;
             $('#is').text(i);
         });
         // 红包多选事件
-        $('.all').on('r', function(event, data) {
+        $(document).on('r', function(event, data) {
             r += data;
             $('#rs').text(r);
         });
         // 红包单选事件
-        $('.all').on('c', function(event, data) {
+        $(document).on('c', function(event, data) {
             c = data;
             $('#cs').text(c);
         });
 
         // 总额
-        $('.all').on('i r c', function(event) {
+        $(document).on('i r c', function(event) {
             a = i + r + c;
             $('#alls').text(a);
         });
@@ -74,14 +74,14 @@
         // 监听输入事件
         $('#in').on('input', function(event) {
             var money = +$(this).val();
-            $('.all').trigger('i', money);
+            $(document).trigger('i', money);
         });
 
         // 监听红包多选点击
         $('.rr').on('click', function(event) {
             var money = $(this).val();
             money = $(this).prop('checked') ? (+money) : (-money);
-            $('.all').trigger('r', money);
+            $(document).trigger('r', money);
         });
 
         // 监听红包单选点击
@@ -95,7 +95,7 @@
             } else {
                 prevCid = null;
             }
-            $('.all').trigger('c', money);
+            $(document).trigger('c', money);
         });
     })();
     </script>
