@@ -90,7 +90,8 @@
             if ($(this).prop('checked')) {
                 money = +$(this).val();
                 $(prevCid).click();
-                prevCid = '#' + $(this).attr('id');
+                // prevCid = '#' + $(this).attr('id');
+                prevCid = '#' + this.id;
             } else {
                 prevCid = null;
             }
