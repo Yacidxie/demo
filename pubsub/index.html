@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.js"></script>
+    <style>
+    .main {
+        margin-left: 30px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <input type="text" class="form-control" placeholder="输入金额" id='in'>
+        <div class="checkbox">
+            <label for="">
+                <input type="checkbox" value='1' id='r1' class="rr"> 红包多选1元
+            </label>
+        </div>
+        <div class="checkbox">
+            <label for="">
+                <input type="checkbox" value='2' id='r2' class='rr'> 红包多选2元
+            </label>
+        </div>
+        <div class="checkbox">
+            <label for="">
+                <input type="checkbox" id='c1' class="cc" value="3"> 红包单选3元
+            </label>
+        </div>
+        <div class="checkbox">
+            <label for="">
+                <input type="checkbox" id='c2' class="cc" value="4"> 红包单选4元
+            </label>
+        </div>
+        <p class="i">输入金额：<span id="is">0</span></p>
+        <p class="r">红包多选总额：<span id="rs">0</span></p>
+        <p class="c">红包单选总额：<span id='cs'>0</span></p>
+        <p class="all">总额：<span id="alls">0</span></p>
+    </div>
+    <script>
+    (function() {
+        var r = 0, // 红包多选总额
+            c = 0, // 红包单选总额
+            i = 0, // 输入金额
+            a = 0, // 总额
+            prevCid = null; // 前一个被选中的红包单选
+
+        // 输入金额事件
+        $('.all').on('i', function(event, data) {
+            i = data;
+            $('#is').text(i);
+        });
+        // 红包多选事件
+        $('.all').on('r', function(event, data) {
+            r += data;
+            $('#rs').text(r);
+        });
+        // 红包单选事件
+        $('.all').on('c', function(event, data) {
+            c = data;
+            $('#cs').text(c);
+        });
+
+        // 总额
+        $('.all').on('i r c', function(event) {
+            a = i + r + c;
+            $('#alls').text(a);
+        });
+
+        // 监听输入事件
+        $('#in').on('input', function(event) {
+            var money = +$(this).val();
+            $('.all').trigger('i', money);
+        });
+
+        // 监听红包多选点击
+        $('.rr').on('click', function(event) {
+            var money = $(this).val();
+            money = $(this).prop('checked') ? (+money) : (-money);
+            $('.all').trigger('r', money);
+        });
+
+        // 监听红包单选点击
+        $('.cc').on('click', function(event) {
+            var money = 0;
+            if ($(this).prop('checked')) {
+                money = +$(this).val();
+                $(prevCid).click();
+                prevCid = '#' + $(this).attr('id');
+            } else {
+                prevCid = null;
+            }
+            $('.all').trigger('c', money);
+        });
+    })();
+    </script>
+</body>
+
+</html>
